@@ -20,7 +20,7 @@ hangupButton.disabled = true;
 startButton.onclick = start;
 callButton.onclick = call;
 amuteButton.onclick = audioToggle;
-vmuteButton.onclick = vidoeToggle;
+vmuteButton.onclick = videoToggle;
 hangupButton.onclick = hangup;
 
 var startTime;
