@@ -10,11 +10,17 @@
 
 var startButton = document.getElementById('startButton');
 var callButton = document.getElementById('callButton');
+var amuteButton = document.getElementById('amuteButton');
+var vmuteButton = document.getElementById('vmuteButton');
 var hangupButton = document.getElementById('hangupButton');
 callButton.disabled = true;
+amuteButton.disabled = true;
+vmuteButton.disabled = true;
 hangupButton.disabled = true;
 startButton.onclick = start;
 callButton.onclick = call;
+amuteButton.onclick = audioToggle;
+vmuteButton.onclick = vidoeToggle;
 hangupButton.onclick = hangup;
 
 var startTime;
@@ -81,6 +87,8 @@ function start() {
 
 function call() {
   callButton.disabled = true;
+  amuteButton.disabled = false;
+  vmuteButton.disabled = false;
   hangupButton.disabled = false;
   trace('Starting call');
   startTime = window.performance.now();
@@ -168,6 +176,7 @@ function onSetSessionDescriptionError(error) {
 function gotRemoteStream(e) {
   remoteVideo.srcObject = e.stream;
   trace('pc2 received remote stream');
+  monitorStream(e.stream);
 }
 
 function onCreateAnswerSuccess(desc) {
@@ -217,7 +226,48 @@ function onIceStateChange(pc, event) {
     console.log('ICE state change event: ', event);
   }
 }
-
+function audioToggle() {
+  if(audioTracks.length > 0){
+    var enable = false;
+    if(amuteButton.textContent == "Audio Unmute") {
+      amuteButton.textContent = "Audio Mute";
+      enable = true;
+    } else {
+      amuteButton.textContent = "Audio Unmute";
+    }
+    for(var i in audioTracks) {
+      audioTracks[i].enabled = enable;
+    }
+  }
+}
+function videoToggle() {
+  if(videoTracks.length > 0){
+    var enable = false;
+    if(vmuteButton.textContent == "Video Unmute") {
+      vmuteButton.textContent = "Video Mute";
+      enable = true;
+    } else {
+      vmuteButton.textContent = "Video Unmute";
+    }
+    for(var i in videoTracks) {
+      videoTracks[i].enabled = enable;
+    }
+  }
+}
+function monitorTrack(track) {
+  track.onended = function(e) { 
+    console.log(track.kind+' track ended mute:'+track.muted+' state: '+track.readyState, track, e);
+  };
+  track.onmute = function(e) {
+    console.log(track.kind+' track muted: '+track.muted+' state: '+track.readyState, track, e);
+  };
+  track.onunmute = function(e) {
+    console.log(track.kind+' track unmuted: '+!track.muted+' state: '+track.readyState, track, e);
+  };
+}
+function monitorStream(stream) {
+  stream.getTracks().forEach(monitorTrack);
+}
 function hangup() {
   trace('Ending call');
   pc1.close();
