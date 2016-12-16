@@ -227,6 +227,7 @@ function onIceStateChange(pc, event) {
   }
 }
 function audioToggle() {
+  var audioTracks = localStream.getAudioTracks();
   if(audioTracks.length > 0){
     var enable = false;
     if(amuteButton.textContent == "Audio Unmute") {
@@ -241,6 +242,7 @@ function audioToggle() {
   }
 }
 function videoToggle() {
+  var videoTracks = localStream.getVideoTracks();
   if(videoTracks.length > 0){
     var enable = false;
     if(vmuteButton.textContent == "Video Unmute") {
